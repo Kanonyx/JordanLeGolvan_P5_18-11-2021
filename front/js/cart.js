@@ -19,11 +19,9 @@ displayCartItems();
 
 function displayCartItems() {
   const cartItems = document.getElementById('cart__items');
-  cartItems.innerHTML = '';
   for (let i = 0; i < cart.length; i++) {
     const item = cart[i];
     const cartItem = document.createElement('div');
-    cartItem.classList.add('cart__item');
     cartItem.innerHTML = `
     <article class="cart__item" data-id="${item.id}" data-color="${item.color}">
     <div class="cart__item__img">
