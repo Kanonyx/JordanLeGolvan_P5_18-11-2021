@@ -1,7 +1,6 @@
 
 const cart = []
 
-
 displayCart();
 
 function displayCart() {
@@ -13,8 +12,10 @@ function displayCart() {
     cart.push(itemObject);
   }
   console.log(cart);
-  
+
 }
+
+
 displayCartItems();
 
 function displayCartItems() {
@@ -46,5 +47,48 @@ function displayCartItems() {
   </article>
     `;
     cartItems.appendChild(cartItem);
+
+  }
+
+
+}
+displayTotalQuantity();
+
+function displayTotalQuantity() {
+  const totalqty = document.getElementById('totalQuantity');
+  let total = 0;
+  for (let i = 0; i < cart.length; i++) {
+    const item = cart[i];
+    total += parseFloat(item.qty);
+  }
+  totalqty.innerHTML = total;
+}
+
+
+
+
+totalPriceDisplay();
+
+function totalPriceDisplay() {
+  const totalPrice = document.getElementById('totalPrice');
+  let total = 0;
+  for (let i = 0; i < cart.length; i++) {
+    const item = cart[i];
+    total += parseFloat(item.price) * parseFloat(item.qty);
+  }
+  totalPrice.innerHTML = total;
+}
+
+PriceAndQuantityUpdater();
+function PriceAndQuantityUpdater() {
+  const setValue = document.querySelectorAll('.cart__item__content__settings__quantity input');
+  for (let i = 0; i < setValue.length; i++) {
+    setValue[i].addEventListener('change', function () {
+      const item = cart[i];
+      item.qty = setValue[i].value;
+      localStorage.setItem(item.id, JSON.stringify(item));
+      totalPriceDisplay();
+      displayTotalQuantity();
+    })
   }
 }
