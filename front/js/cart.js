@@ -1,6 +1,8 @@
 
 const cart = []
 
+
+
 displayCart();
 
 function displayCart() {
@@ -79,8 +81,12 @@ function totalPriceDisplay() {
   totalPrice.innerHTML = total;
 }
 
-PriceAndQuantityUpdater();
-function PriceAndQuantityUpdater() {
+
+
+
+priceAndQuantityUpdater();
+
+function priceAndQuantityUpdater() {
   const setValue = document.querySelectorAll('.cart__item__content__settings__quantity input');
   for (let i = 0; i < setValue.length; i++) {
     setValue[i].addEventListener('change', function () {
@@ -91,4 +97,67 @@ function PriceAndQuantityUpdater() {
       displayTotalQuantity();
     })
   }
+}
+
+
+
+itemDeleter();
+
+function itemDeleter() {
+  const deleteItem = document.querySelectorAll('.deleteItem');
+  for (let i = 0; i < deleteItem.length; i++) {
+    deleteItem[i].addEventListener('click', function () {
+      const item = cart[i];
+      cart.splice(i, 1);
+      localStorage.removeItem(item.id);
+      displayCart();
+      displayCartItems();
+      totalPriceDisplay();
+      displayTotalQuantity();
+      location.reload();
+    })
+  }
+}
+
+
+orderForm();
+function orderForm() {
+  const orderBtn = document.getElementById('order');
+  const form = document.querySelector('.cart__order__form');
+  console.log(form.elements)
+  orderBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    if (cart.length === 0) alert('Votre panier est vide');
+    const firstName = document.getElementById('firstName').value;
+    const lastName = document.getElementById('lastName').value;
+    const email = document.getElementById('email').value;
+    const address = document.getElementById('address').value;
+    const city = document.getElementById('city').value;
+    const ids = [];
+    for (let i = 0; i < cart.length; i++) {
+      const item = cart[i];
+      ids.push(item.id);
+    }
+    const body = {
+      contact: {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        address: address,
+        city: city,
+      },
+      products: ids,
+    }
+    fetch('http://localhost:3000/api/products/order', {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then((res) => res.json())
+      .then((data) => console.log(data))
+
+  })
+
 }
