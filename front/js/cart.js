@@ -115,6 +115,7 @@ function itemDeleter() {
       totalPriceDisplay();
       displayTotalQuantity();
       location.reload();
+      console.log(cart);
     })
   }
 }
@@ -124,15 +125,23 @@ orderForm();
 function orderForm() {
   const orderBtn = document.getElementById('order');
   const form = document.querySelector('.cart__order__form');
-  console.log(form.elements)
   orderBtn.addEventListener('click', function (e) {
     e.preventDefault();
-    if (cart.length === 0) alert('Votre panier est vide');
+    if (cart.length === 0) {alert('Votre panier est vide'); return;} 
     const firstName = document.getElementById('firstName').value;
     const lastName = document.getElementById('lastName').value;
     const email = document.getElementById('email').value;
     const address = document.getElementById('address').value;
     const city = document.getElementById('city').value;
+    if (firstName === '' || lastName === '' || email === '' || address === '' || city === '') {
+      alert('Veuillez remplir tous les champs');
+      return;
+    }
+    const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (email != '' && !regex.test(email)) {
+      alert('Veuillez entrer une adresse email valide');
+      return;
+    }
     const ids = [];
     for (let i = 0; i < cart.length; i++) {
       const item = cart[i];
@@ -158,6 +167,6 @@ function orderForm() {
       .then((res) => res.json())
       .then((data) => console.log(data))
 
+      window.location.href = 'confirmation.html';
   })
-
 }

@@ -52,7 +52,7 @@ button.addEventListener('click', () => {
     }
     console.log(cart);
     localStorage.setItem(id, JSON.stringify(cart));
-    window.location.href = 'cart.html';
+    window.location.href = 'index.html';
 })
 
 
