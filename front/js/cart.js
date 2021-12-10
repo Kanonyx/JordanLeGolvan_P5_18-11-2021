@@ -122,6 +122,7 @@ function itemDeleter() {
 
 
 orderForm();
+
 function orderForm() {
   const orderBtn = document.getElementById('order');
   const form = document.querySelector('.cart__order__form');
@@ -165,8 +166,15 @@ function orderForm() {
       }
     })
       .then((res) => res.json())
-      .then((data) => console.log(data))
+      .then((data) => {
+        const orderId = data.orderId;
+        window.location.href = 'confirmation.html'+'?orderId='+orderId;
+       return console.log(data)
+      
+      } )
+      .catch((err) => console.log(err));
 
-      window.location.href = 'confirmation.html';
+
+      
   })
 }
