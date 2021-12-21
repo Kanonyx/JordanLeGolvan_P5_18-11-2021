@@ -91,8 +91,9 @@ function priceAndQuantityUpdater() {
   for (let i = 0; i < setValue.length; i++) {
     setValue[i].addEventListener('change', function () {
       const item = cart[i];
+      const key = item.id +"-"+ item.color
       item.qty = setValue[i].value;
-      localStorage.setItem(item.id, JSON.stringify(item));
+      localStorage.setItem(key, JSON.stringify(item));
       totalPriceDisplay();
       displayTotalQuantity();
     })
@@ -108,10 +109,11 @@ function itemDeleter() {
   for (let i = 0; i < deleteItem.length; i++) {
     deleteItem[i].addEventListener('click', function () {
       const item = cart[i];
+      const key = item.id +"-"+ item.color
       cart.splice(i, 1);
-      localStorage.removeItem(item.id);
-      displayCart();
+      localStorage.removeItem(key);
       displayCartItems();
+      displayCart();
       totalPriceDisplay();
       displayTotalQuantity();
       location.reload();
@@ -178,3 +180,4 @@ function orderForm() {
       
   })
 }
+

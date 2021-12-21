@@ -50,8 +50,9 @@ button.addEventListener('click', () => {
         color: color,
         qty: qty,
     }
+    const key = cart.id +"-"+ cart.color
     console.log(cart);
-    localStorage.setItem(id, JSON.stringify(cart));
+    localStorage.setItem(key, JSON.stringify(cart));
     window.location.href = 'index.html';
 })
 
