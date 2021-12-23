@@ -127,7 +127,6 @@ orderForm();
 
 function orderForm() {
   const orderBtn = document.getElementById('order');
-  const form = document.querySelector('.cart__order__form');
   orderBtn.addEventListener('click', function (e) {
     e.preventDefault();
     if (cart.length === 0) {alert('Votre panier est vide'); return;} 
@@ -136,16 +135,19 @@ function orderForm() {
     const email = document.getElementById('email').value;
     const address = document.getElementById('address').value;
     const city = document.getElementById('city').value;
-    if (firstName === '' || lastName === '' || email === '' || address === '' || city === '') {
-      alert('Veuillez remplir tous les champs');
-      return;
-    }
-    const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (email != '' && !regex.test(email)) {
-      alert('Veuillez entrer une adresse email valide');
-      return;
-    }
-    const ids = [];
+   
+    checkForm(firstName, lastName, email, address, city);
+
+    checkEmail(email);
+
+    makeOrder(firstName, lastName, email, address, city);
+  })  
+}
+
+function makeOrder (firstName, lastName, email, address, city) {
+  const ids = [];
+
+  // replace by map ( map )
     for (let i = 0; i < cart.length; i++) {
       const item = cart[i];
       ids.push(item.id);
@@ -176,8 +178,22 @@ function orderForm() {
       } )
       .catch((err) => console.log(err));
 
-
-      
-  })
 }
 
+
+
+function checkForm(firstName, lastName, email, address, city) {
+  if (firstName === '' || lastName === '' || email === '' || address === '' || city === '') {
+    alert('Veuillez remplir tous les champs');
+    throw new Error('Veuillez remplir tous les champs');
+  }
+}
+
+
+function checkEmail (email) {
+  const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (email != '' && !regex.test(email)) {
+      alert('Veuillez entrer une adresse email valide');
+      throw new Error('Email is not valid');
+    }
+}
