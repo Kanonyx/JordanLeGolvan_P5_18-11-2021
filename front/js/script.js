@@ -1,7 +1,10 @@
+
+
+//récupartion des produits dans l'api
 fetch('http://127.0.0.1:3000/api/products').then(res => res.json()).then(result => showProducts(result))
 
  
-    
+// affichage des produits dans l'html  
     function showProducts(products) {
         products.forEach(product=> {
             console.log(products)

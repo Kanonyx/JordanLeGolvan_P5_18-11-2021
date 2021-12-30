@@ -3,9 +3,9 @@ const cart = []
 
 
 
-displayCart();
-
-function displayCart() {
+storageToCart();
+//insertion des éléments du localStorage dans l'array cart
+function storageToCart() {
   const numberOfItems = localStorage.length;
   console.log(numberOfItems);
   for (let i = 0; i < numberOfItems; i++) {
@@ -18,9 +18,11 @@ function displayCart() {
 }
 
 
-displayCartItems();
 
-function displayCartItems() {
+
+displayCartHTML();
+//créatiion de l'article HTML en fonction des entrées de l'array cart
+function displayCartHTML() {
   const cartItems = document.getElementById('cart__items');
   for (let i = 0; i < cart.length; i++) {
     const item = cart[i];
@@ -54,8 +56,13 @@ function displayCartItems() {
 
 
 }
-displayTotalQuantity();
 
+
+
+
+
+displayTotalQuantity();
+//calcule la quantité total en fonction des entrées de l'array cart
 function displayTotalQuantity() {
   const totalqty = document.getElementById('totalQuantity');
   let total = 0;
@@ -69,9 +76,11 @@ function displayTotalQuantity() {
 
 
 
-totalPriceDisplay();
 
-function totalPriceDisplay() {
+
+displayTotalPrice();
+// affiche le prix total
+function displayTotalPrice() {
   const totalPrice = document.getElementById('totalPrice');
   let total = 0;
   for (let i = 0; i < cart.length; i++) {
@@ -84,17 +93,19 @@ function totalPriceDisplay() {
 
 
 
-priceAndQuantityUpdater();
 
-function priceAndQuantityUpdater() {
+
+updatePriceAndQuantity();
+// Modifie la quantité et le prix total d'un item après la detection d'un changement au niveau du selecteur de quantité sur l'item
+function updatePriceAndQuantity() {
   const setValue = document.querySelectorAll('.cart__item__content__settings__quantity input');
   for (let i = 0; i < setValue.length; i++) {
     setValue[i].addEventListener('change', function () {
       const item = cart[i];
-      const key = item.id +"-"+ item.color
+      const key = item.id + "-" + item.color
       item.qty = setValue[i].value;
       localStorage.setItem(key, JSON.stringify(item));
-      totalPriceDisplay();
+      displayTotalPrice();
       displayTotalQuantity();
     })
   }
@@ -102,19 +113,23 @@ function priceAndQuantityUpdater() {
 
 
 
-itemDeleter();
 
-function itemDeleter() {
+
+
+
+deleteItem();
+// Efface un item du panier
+function deleteItem() {
   const deleteItem = document.querySelectorAll('.deleteItem');
   for (let i = 0; i < deleteItem.length; i++) {
     deleteItem[i].addEventListener('click', function () {
       const item = cart[i];
-      const key = item.id +"-"+ item.color
+      const key = item.id + "-" + item.color
       cart.splice(i, 1);
       localStorage.removeItem(key);
-      displayCartItems();
-      displayCart();
-      totalPriceDisplay();
+      displayCartHTML();
+      storageToCart();
+      displayTotalPrice();
       displayTotalQuantity();
       location.reload();
       console.log(cart);
@@ -123,65 +138,79 @@ function itemDeleter() {
 }
 
 
-orderForm();
 
+
+
+
+orderForm();
+// Au clic sur le bouton d'envoi de la commande, on vérifie que les champs sont remplis corectement et on envoie la commande au serveur
 function orderForm() {
   const orderBtn = document.getElementById('order');
   orderBtn.addEventListener('click', function (e) {
     e.preventDefault();
-    if (cart.length === 0) {alert('Votre panier est vide'); return;} 
+    if (cart.length === 0) { alert('Votre panier est vide'); return; }
     const firstName = document.getElementById('firstName').value;
     const lastName = document.getElementById('lastName').value;
     const email = document.getElementById('email').value;
     const address = document.getElementById('address').value;
     const city = document.getElementById('city').value;
-   
+
     checkForm(firstName, lastName, email, address, city);
 
     checkEmail(email);
 
     makeOrder(firstName, lastName, email, address, city);
-  })  
+  })
 }
 
-function makeOrder (firstName, lastName, email, address, city) {
+
+
+
+
+
+// Envoie des donnees au serveur
+function makeOrder(firstName, lastName, email, address, city) {
   const ids = [];
 
-  // replace by map ( map )
-    for (let i = 0; i < cart.length; i++) {
-      const item = cart[i];
-      ids.push(item.id);
+  for (let i = 0; i < cart.length; i++) {
+    const item = cart[i];
+    ids.push(item.id);
+  }
+  const body = {
+    contact: {
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      address: address,
+      city: city,
+    },
+    products: ids,
+  }
+  
+  fetch('http://localhost:3000/api/products/order', {
+    method: 'POST',
+    body: JSON.stringify(body),
+    headers: {
+      'Content-Type': 'application/json'
     }
-    const body = {
-      contact: {
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        address: address,
-        city: city,
-      },
-      products: ids,
-    }
-    fetch('http://localhost:3000/api/products/order', {
-      method: 'POST',
-      body: JSON.stringify(body),
-      headers: {
-        'Content-Type': 'application/json'
-      }
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      const orderId = data.orderId;
+      window.location.href = 'confirmation.html' + '?orderId=' + orderId;
+      return console.log(data)
+
     })
-      .then((res) => res.json())
-      .then((data) => {
-        const orderId = data.orderId;
-        window.location.href = 'confirmation.html'+'?orderId='+orderId;
-       return console.log(data)
-      
-      } )
-      .catch((err) => console.log(err));
+    .catch((err) => console.log(err));
 
 }
 
 
 
+
+
+
+// Vérifie que les champs ne sont pas vides
 function checkForm(firstName, lastName, email, address, city) {
   if (firstName === '' || lastName === '' || email === '' || address === '' || city === '') {
     alert('Veuillez remplir tous les champs');
@@ -190,10 +219,13 @@ function checkForm(firstName, lastName, email, address, city) {
 }
 
 
-function checkEmail (email) {
+
+
+// Vérifie que l'email est valide
+function checkEmail(email) {
   const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (email != '' && !regex.test(email)) {
-      alert('Veuillez entrer une adresse email valide');
-      throw new Error('Email is not valid');
-    }
+  if (email != '' && !regex.test(email)) {
+    alert('Veuillez entrer une adresse email valide');
+    throw new Error('Email is not valid');
+  }
 }
